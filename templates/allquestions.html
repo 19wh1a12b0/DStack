@@ -1,0 +1,14 @@
+-----------------------------------------------------------------
+{% for i in allQuestionsData %}
+    <br/>
+    {{i.2.isActive}}
+    <!-- isActive  means question is on active means question may conatains money-->
+    {{i.2.isFree}}
+    <!-- isFree means user paid 0 for that -->
+    
+    <a href="{% url 'questionId' i.2.id %}">
+        <p>Title: {{i.0}}</p>
+    </a>
+    ---------------------------------------------------------------------
+
+{% endfor %}

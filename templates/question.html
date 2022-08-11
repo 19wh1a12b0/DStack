@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>question</title>
+    <script src="https://cdn.ethers.io/scripts/ethers-v3.min.js" charset="utf-8" type="text/javascript"></script>
+
+</head>
+<body>
+    question
+    <div id="temp-data-block">
+    <form method="POST" action="{% url 'questionAdd' %}">
+        {% csrf_token %}
+        <input type="text" id="title" name="title"  placeholder="Title of the question" />
+        <input type="text"  id="description" name="description" placeholder="Description" />
+        <input type="text"  id="price" name="price" placeholder="Price in MATIC" />
+        <input type="submit" id="handle-submit" hidden/>
+    </form>
+    <button onClick="checkData();">Add Funds</button>
+
+    </div>
+
+
+    <div id="pay-to-me" hidden>
+
+        <button onClick="transaction();">Stake Money</button>
+
+    </div>
+</body>
+
+
+
+<script>
+    const receiver = String("{{receiverWalletAddress}}");
+    let title,description,price;
+    let gas_price_x ,provider_t,signer_t;
+    function checkData(){
+        title = document.getElementById('title').value;
+        description = document.getElementById('description').value;
+        price = document.getElementById("price").value;
+        console.log(price);
+        document.getElementById('temp-data-block').hidden=true;
+        if(price==0)
+        {
+            document.getElementById('handle-submit').click();
+        }
+        else
+        {
+            document.getElementById('pay-to-me').hidden=false;
+        }
+
+    }
+
+
+    async function transaction() {
+      const _1_MATIC_value = price;
+        provider_t = new ethers.providers.Web3Provider(window.ethereum);
+       signer_t =await provider_t.getSigner();
+      console.log('sig',signer_t,'xx',provider_t);
+      console.log(receiver);
+
+      
+
+      try{
+        const txn = await signer_t.sendTransaction({ to: receiver, value: ethers.utils.parseEther(_1_MATIC_value) });
+        const x = txn.wait();
+        alert('Stake Done');
+         document.getElementById('handle-submit').click();
+
+      }
+      catch(err){
+        console.log(err);
+      }
+    }
+
+
+</script>
+
+
+
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+
+</head>
+<body>
+
+   Title: {{title}}
+    <br/>
+    Description: {{description}}
+    <br/>
+
+    <br/>
+
+    <!-- if isActive means we need to show price -->
+
+    {% if question.isActive and question.isFree == False %}
+
+    Developer can earn this much of price: 
+        {{price}}
+
+    
+
+    {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    -----------------------------------------------------------------
+    Comments or solution by other devs here
+
+
+
+    <form action="{% url 'comment' question.id  %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="comment" />
+        <input type="submit" value="Comment" />
+    </form>
+
+
+
+
+    -----------------------------------------------------------------
+    <br/>
+    {% for i in comments %}
+    **************
+    <br/>
+        {{i.data}}
+        <br/>
+        {{i.user.WalletAddress}}
+        <br>
+
+        {% if i.won  %}
+            Winner is Me
+        {% endif %}
+
+        {% if i.won == False and i.isActive == False and question.user.WalletAddress == present_login_WalletAddress %}
+            <button onClick="SendToken();">Give Money to this user</button>
+
+            <br/>
+
+            <form action="{% url 'finalDataSend' %}" method="POST">
+                {% csrf_token %}
+                <input type="text" id="presentWalletId" name="presentWalletId" value="{{i.user.WalletAddress}}" hidden/>
+                <input type="text" value="{{i.id}}" id="commentId" name="commentId" hidden/>
+                <input type="text" value="{{question.id}}" id="questionId" name="questionId" hidden/>    
+                <input type="submit" id="final-btn" hidden/>    
+            </form>
+
+        {% endif %}
+
+    
+    {% endfor %}
+
+    <script>
+        async function SendToken(){
+
+            let provider = new ethers.providers.Web3Provider(window.ethereum);
+            let privateKey ="{{PRIVATE_KEY}}";
+            let wallet = new ethers.Wallet(privateKey, provider)
+
+
+
+            const WalletAddress = document.getElementById("presentWalletId").value;
+
+            
+
+            let receiverAddress = WalletAddress;
+            let amountInEther = "{{price}}";
+
+            let tx = {to: receiverAddress,value: ethers.utils.parseEther(amountInEther)}
+
+            await wallet.sendTransaction(tx).then((txObj) => {
+            console.log('txHash', txObj.hash);
+
+            alert('money sent');
+            document.getElementById('final-btn').click();
+            })
+
+
+
+            
+        }
+    </script>
+
+</body>
+</html>
